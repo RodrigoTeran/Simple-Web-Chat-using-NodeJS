@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta charset="iso-8559-1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Chat de prueba</title>
+    <style type="text/css">
+        .parte2{
+            display: none;
+        }
+        .titulo{
+            font-size: 50px;
+            text-align: center;
+        }
+        .mensajes{
+            background-color: rgba(180,180,180,1);
+            width: 500px;
+            text-align: center;
+            min-height: 300px;
+            max-height: 300px;
+            position: fixed;
+            top:200px;
+            left: 520px;
+            z-index: 999;
+            overflow-y: scroll;
+            font-size: 30px;
+        }
+        .PonerTexto{
+            margin-top: 320px;
+            margin-left: 520px;
+        }
+        .inputChat{
+            width:480px;
+        }
+        .chatFormPonerNombre{
+            text-align: center;
+            margin:auto;
+        }
+        .buttonNombre{
+            text-align: center;
+            margin-left:626px;
+            width: 260px;
+        }
+        #noDisplay{
+            display: none;
+        }
+        #yesDisplay{
+            display: block;   
+        }
+        .noMobile{
+            font-size: 50px;
+            font-family: "Arial";
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="noMobile" id="noDisplay">This Website is not made for mobile devices</div>
+    <div class="todo" id="noDisplay">
+        <div class="parte1">
+            <form class="chatFormPonerNombre">
+                Pon tu nombre
+                <input class="inputNombre" maxlength="15" type="text" name="nameplayer"/>
+            </form>
+            <button class="buttonNombre" onClick="CambiarDeParte1a2();">Enviar</button>
+        </div>
+        <div class="parte2">
+            <div class="titulo">
+                <h1>Chat</h1>
+            </div>
+            <div class="mensajes">
+            </div>
+            <div class="PonerTexto">
+                <form class="chatForm">
+                    <input class="inputChat" maxlength="54" type="text" name="nameTexto"/>
+                </form>
+                <button onClick="MandarTextoServer();">Enviar</button>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js">
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js">
+    </script> 
+    <script type="text/javascript">
+        var socket = io();
+        function MandarTextoServer(){
+            var nameplayer = document.getElementsByName("nameplayer")[0].value;
+            var nameTexto = document.getElementsByName("nameTexto")[0].value;
+            var data = nameplayer + ": " + nameTexto;
+            socket.emit("sendMsgToServer", data);
+            document.getElementsByName("nameTexto")[0].value = "";
+        }
+        socket.on("MandarTexto", function(data){
+            PonerTexto(data)
+        });
+        function PonerTexto(data){
+            document.getElementsByClassName("mensajes")[0].innerHTML+=data+"<br>"; 
+        };
+        function CambiarDeParte1a2(){
+            document.getElementsByClassName("parte1")[0].style.display = 'none';
+            document.getElementsByClassName("parte2")[0].style.display = 'block';
+        };
+        function isMobile(){    // check if the user is in a mobile device
+            return (
+                (navigator.userAgent.match(/Android/i)) ||
+                (navigator.userAgent.match(/webOS/i)) ||
+                (navigator.userAgent.match(/iPhone/i)) ||
+                (navigator.userAgent.match(/iPod/i)) ||
+                (navigator.userAgent.match(/iPad/i)) ||
+                (navigator.userAgent.match(/iBlackBerry/i))
+            );
+        };
+        var noMobile = document.getElementsByClassName("noMobile")[0];
+        var todo = document.getElementsByClassName("todo")[0];
+        if(isMobile()){ //if it is mobile, hide todo
+            todo.id = 'noDisplay';
+            noMobile.id = 'yesDisplay';
+        }else{  //if it is in a website hide noMobile
+            todo.id = 'yesDisplay';
+            noMobile.id = 'noDisplay';
+        };
+    </script>
+</body>
+</html>
